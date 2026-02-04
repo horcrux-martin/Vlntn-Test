@@ -300,3 +300,31 @@ body{
   .btn--yes{width:82%;}
   .btn--no{width:66%;}
 }
+
+/* ===== Tap safety: effects never block clicks ===== */
+.bg, .bg * , #fx, #floaties, .floaty{
+  pointer-events: none !important;
+}
+
+/* Keep interactive UI above everything */
+.stage{
+  position: relative;
+  z-index: 10;
+}
+
+/* Ensure buttons are always tappable */
+.card, .reveal{
+  position: relative;
+  z-index: 20;
+}
+
+.actions{
+  position: relative;
+  z-index: 30;
+}
+
+.btn{
+  position: relative;
+  z-index: 40;
+}
+
