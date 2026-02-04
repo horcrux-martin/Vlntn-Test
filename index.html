@@ -3,69 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Valentine</title>
+  <title>Valentine for Devi</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Painterly garden background -->
+  <!-- Full-screen background -->
   <div class="bg" aria-hidden="true">
-    <div class="bg__paint"></div>
+    <div class="bg__overlay"></div>
+    <div class="bg__bloom"></div>
     <div class="bg__grain"></div>
-    <div class="bg__flowers"></div>
   </div>
 
-  <!-- Effects canvas -->
+  <!-- FX canvas -->
   <canvas id="fx" aria-hidden="true"></canvas>
 
-  <main class="shell">
-    <section class="panel" id="panel">
-      <div class="panel__top">
-        <div class="mark" aria-hidden="true">
-          <span class="mark__dot"></span>
-          <span class="mark__dot"></span>
-          <span class="mark__dot"></span>
+  <!-- Floaties layer -->
+  <div id="floaties" aria-hidden="true"></div>
+
+  <main class="stage">
+    <!-- Question -->
+    <section class="card" id="card" aria-label="Valentine question">
+      <div class="card__header">
+        <div class="dots" aria-hidden="true">
+          <span></span><span></span><span></span>
         </div>
-        <div class="badge">A question, simply.</div>
+        <div class="tag">No games. Just intention.</div>
       </div>
 
-      <h1 class="title">
-        Will you be my Valentine, <span class="name">Devi</span>?
+      <h1 class="headline">
+        Will you be my Valentine, <span class="accent">Devi</span>?
       </h1>
 
-      <p class="sub">
-  I don’t believe in coincidence.<br/>
-  I believe in choosing you — deliberately, every day.
-</p>
+      <p class="copy">
+        I’m not here to impress you.<br/>
+        I’m here to <span class="strong">choose you</span> — clearly, consistently, and on purpose.
+      </p>
 
       <div class="actions" id="actions">
-        <button class="btn btn--yes" id="yesBtn" type="button">
-          Yes
-        </button>
-
-        <button class="btn btn--no" id="noBtn" type="button">
-          No
-        </button>
+        <button class="btn btn--yes" id="yesBtn" type="button">Yes</button>
+        <button class="btn btn--no" id="noBtn" type="button">No</button>
       </div>
 
-      <p class="note" id="note">
-        (The “No” option is… unreliable.)
+      <p class="micro" id="micro">
+        (The “No” option tends to disappear when it’s outmatched.)
       </p>
     </section>
 
-    <!-- Success view -->
+    <!-- Reveal -->
     <section class="reveal" id="reveal" aria-hidden="true">
-      <div class="reveal__header">
-        <div class="chip">Confirmed.</div>
-        <h2 class="reveal__title">Then it’s settled.</h2>
-<p class="reveal__sub">
-  I choose you.  
-  In this season, and the ones that follow.
-</p>
+      <div class="reveal__top">
+        <div class="pill">Confirmed.</div>
+        <h2 class="reveal__title">Come closer.</h2>
+        <p class="reveal__copy">
+          Good. Then it’s simple.<br/>
+          You and me — and I’ll handle the rest.
+        </p>
       </div>
 
-      <div class="frame" role="img" aria-label="Photo placeholder">
+      <div class="frame">
         <img src="assets/ups.jpg" alt="Photo placeholder" />
-        <div class="frame__caption">Us.</div>
+        <div class="frame__label">Us.</div>
       </div>
 
       <div class="reveal__actions">
@@ -75,12 +72,9 @@
     </section>
 
     <footer class="footer">
-      <span>Sunflowers. Wildflowers. Good taste.</span>
+      <span>Sunflowers. Wildflowers. And a decision I don’t second-guess.</span>
     </footer>
   </main>
-
-  <!-- Floating petals/hearts container -->
-  <div id="floaties" aria-hidden="true"></div>
 
   <script src="script.js"></script>
 </body>
