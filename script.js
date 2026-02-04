@@ -34,12 +34,15 @@ const NO_ESCAPE_LIMIT = 3;
 
 function ensureNoAbsolute() {
   if (noIsAbsolute) return;
+
+  // Only allow absolute positioning after NO is interacted with
   noBtn.style.position = "absolute";
-  noBtn.style.left = "62%";
-  noBtn.style.top = "70%";
+  noBtn.style.left = "50%";
+  noBtn.style.top = "75%";
   noBtn.style.transform = "translate(-50%, -50%)";
   noIsAbsolute = true;
 }
+
 
 function moveNo() {
   if (noEscapes >= NO_ESCAPE_LIMIT) return;
