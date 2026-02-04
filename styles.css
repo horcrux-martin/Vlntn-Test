@@ -552,3 +552,11 @@ body{
   .btn--yes{ width: 82%; max-width: 280px; }
   .btn--no{ width: 66%; max-width: 220px; }
 }
+/* Hard stop: nothing invisible should steal taps */
+.popup { pointer-events: none; }
+.popup.is-open { pointer-events: auto; }
+
+/* Make sure the card content sits above everything */
+.card, .reveal, .actions { position: relative; z-index: 999; }
+.btn { position: relative; z-index: 1000; }
+
