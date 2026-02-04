@@ -27,22 +27,31 @@ const bgm = document.getElementById("bgm");
 const musicBtn = document.getElementById("musicBtn");
 let musicPlaying = false;
 
-// ===== "No" button logic =====
+// ===== NO button state =====
 let noIsAbsolute = false;
 let noEscapes = 0;
 const NO_ESCAPE_LIMIT = 3;
 
+// ===== Floaties =====
+const FLOAT_SET = ["💗","💞","💘","🌹","🌸","🌺","✨","🤍","🌻"];
+let floatTimer = null;
+
+// ===== Fireworks =====
+const canvas = document.getElementById("fx");
+const ctx = canvas.getContext("2d");
+let particles = [];
+let fireworksOn = false;
+let fwTimer = null;
+
+// ---------- NO escape helpers ----------
 function ensureNoAbsolute() {
   if (noIsAbsolute) return;
-
-  // Only allow absolute positioning after NO is interacted with
   noBtn.style.position = "absolute";
   noBtn.style.left = "50%";
   noBtn.style.top = "75%";
   noBtn.style.transform = "translate(-50%, -50%)";
   noIsAbsolute = true;
 }
-
 
 function moveNo() {
   if (noEscapes >= NO_ESCAPE_LIMIT) return;
@@ -57,7 +66,7 @@ function moveNo() {
   const maxX = Math.max(pad, area.width - btn.width - pad);
   const maxY = Math.max(pad, area.height - btn.height - pad);
 
-  // Mobile safe zone: NO should not go above the YES area
+  // Mobile: keep NO below YES area so it never blocks YES tap
   const isMobile = window.innerWidth <= 520;
   const yesRect = yesBtn.getBoundingClientRect();
 
@@ -67,7 +76,7 @@ function moveNo() {
     y = rand(pad, maxY);
     tries++;
   } while (
-    tries < 16 &&
+    tries < 18 &&
     isMobile &&
     (y < (yesRect.bottom - area.top + 10))
   );
@@ -80,10 +89,11 @@ function moveNo() {
   if (noEscapes === 2) micro.textContent = "(Still no.)";
 
   if (noEscapes === 3) {
-    micro.textContent = "(Alright. You win.)";
+    micro.textContent = "(Good. We’re being honest now.)";
 
-    // Give up: stop escaping, become clickable, go back into layout
+    // Give up look, but still not an option
     noBtn.classList.add("is-given-up");
+    noBtn.textContent = "Fine.";
     noBtn.style.position = "relative";
     noBtn.style.left = "auto";
     noBtn.style.top = "auto";
@@ -98,33 +108,15 @@ noBtn.addEventListener("touchstart", (e) => {
   moveNo();
 }, { passive: false });
 
-window.addEventListener("resize", () => {
-  // don't auto-move NO on resize; it can cause overlap/tap issues on mobile
-});
-
-
-// After give-up, clicking NO does a classy “nice try”
+// After give-up: clicking NO triggers YES anyway
 noBtn.addEventListener("click", () => {
   if (noEscapes < NO_ESCAPE_LIMIT) return;
 
-  micro.textContent = "(That’s cute. But it’s Yes.)";
-  card?.animate?.(
-    [
-      { transform: "translateX(0)" },
-      { transform: "translateX(-6px)" },
-      { transform: "translateX(6px)" },
-      { transform: "translateX(-4px)" },
-      { transform: "translateX(4px)" },
-      { transform: "translateX(0)" }
-    ],
-    { duration: 260, easing: "ease-out" }
-  );
+  micro.textContent = "(Perfect. You chose Yes.)";
+  yesBtn.click();
 });
 
-// ===== Floaties (love floating on YES) =====
-const FLOAT_SET = ["💗","💞","💘","🌹","🌸","🌺","✨","🤍","🌻"];
-let floatTimer = null;
-
+// ---------- Floaties ----------
 function spawnFloaty() {
   const el = document.createElement("div");
   el.className = "floaty";
@@ -157,10 +149,7 @@ function stopFloaties() {
   floatTimer = null;
 }
 
-// ===== Fireworks =====
-const canvas = document.getElementById("fx");
-const ctx = canvas.getContext("2d");
-
+// ---------- Fireworks ----------
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
   canvas.width = Math.floor(window.innerWidth * dpr);
@@ -172,10 +161,6 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-let particles = [];
-let fireworksOn = false;
-let fwTimer = null;
-
 function launchFirework() {
   const cx = rand(0.18, 0.82) * window.innerWidth;
   const cy = rand(0.16, 0.54) * window.innerHeight;
@@ -186,7 +171,6 @@ function launchFirework() {
   for (let i = 0; i < count; i++) {
     const a = rand(0, Math.PI * 2);
     const sp = rand(1.5, 5.4);
-
     particles.push({
       x: cx, y: cy,
       vx: Math.cos(a) * sp,
@@ -242,7 +226,7 @@ function stopFireworks() {
   fwTimer = null;
 }
 
-// ===== Music =====
+// ---------- Music ----------
 function setMusicIcon() {
   if (!musicBtn) return;
   musicBtn.textContent = musicPlaying ? "❚❚" : "♫";
@@ -280,7 +264,7 @@ musicBtn?.addEventListener("click", async () => {
   }
 });
 
-// ===== Bouquet popup =====
+// ---------- Popup ----------
 function openPopup() {
   if (!popup) return;
   popup.classList.add("is-open");
@@ -301,7 +285,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closePopup();
 });
 
-// ===== Flow =====
+// ---------- Flow ----------
 function showReveal() {
   card.style.display = "none";
   reveal.style.display = "flex";
@@ -320,26 +304,24 @@ function showReveal() {
   );
 }
 
-// YES: love mode + music + reveal
+// YES: pink love mode + music + reveal (mobile-safe)
 yesBtn.addEventListener("click", async () => {
-  // turn button pink immediately
   yesBtn.classList.add("is-love");
   yesBtn.textContent = "Yes 💗";
 
   await forcePlayMusic();
 
-  // show reveal after a tiny pause so the color change is visible
   setTimeout(() => showReveal(), 180);
 });
 
-// MORE: bouquet surprise popup + extra sparkle
+// More: bouquet popup + extra sparkle
 moreBtn?.addEventListener("click", () => {
   openPopup();
   burst(28);
   launchFirework();
 });
 
-// RESET: restore everything
+// Reset: restore
 resetBtn?.addEventListener("click", () => {
   stopFloaties();
   stopFireworks();
@@ -352,13 +334,14 @@ resetBtn?.addEventListener("click", () => {
   reveal.setAttribute("aria-hidden", "true");
   card.style.display = "block";
 
-  // restore YES
+  // Restore YES
   yesBtn.classList.remove("is-love");
   yesBtn.textContent = "Yes";
 
-  // restore NO state
+  // Restore NO state
   noEscapes = 0;
   noBtn.classList.remove("is-given-up");
+  noBtn.textContent = "No";
   noBtn.style.position = "relative";
   noBtn.style.left = "auto";
   noBtn.style.top = "auto";
@@ -368,6 +351,6 @@ resetBtn?.addEventListener("click", () => {
   micro.textContent = "(The “No” option tends to disappear when it’s outmatched.)";
   burst(10);
 
-  // music stays playing (classy). If you want it to stop on reset:
+  // Music stays playing. If you want it OFF on reset, uncomment:
   // bgm.pause(); musicPlaying=false; setMusicIcon();
 });
