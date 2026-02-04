@@ -45,15 +45,33 @@ function moveNo() {
   const area = actions.getBoundingClientRect();
   const btn  = noBtn.getBoundingClientRect();
 
-  const pad = 8;
+  const pad = 10;
+
+  // SAFE ZONE: prevent overlap with YES
+  const yesRect = yesBtn.getBoundingClientRect();
+
   const maxX = Math.max(pad, area.width - btn.width - pad);
   const maxY = Math.max(pad, area.height - btn.height - pad);
 
-  noBtn.style.left = `${rand(pad, maxX)}px`;
-  noBtn.style.top  = `${rand(pad, maxY)}px`;
+  let x, y, tries = 0;
+
+  do {
+    x = rand(pad, maxX);
+    y = rand(pad, maxY);
+    tries++;
+  } while (
+    tries < 12 &&
+    (
+      y < (yesRect.bottom - area.top + 8) && // don't go above YES
+      window.innerWidth <= 520
+    )
+  );
+
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top  = `${y}px`;
   noBtn.style.transform = "none";
 
-  micro.textContent = "(It refuses to cooperate.)";
+  micro.textContent = "(Still not an option.)";
 }
 
 noBtn.addEventListener("mouseenter", moveNo);
