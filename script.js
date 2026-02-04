@@ -27,53 +27,68 @@ const bgm = document.getElementById("bgm");
 const musicBtn = document.getElementById("musicBtn");
 let musicPlaying = false;
 
-// ===== "No" button: evasive =====
+// ===== "No" button logic =====
 let noIsAbsolute = false;
+let noEscapes = 0;
+const NO_ESCAPE_LIMIT = 3;
 
 function ensureNoAbsolute() {
   if (noIsAbsolute) return;
   noBtn.style.position = "absolute";
   noBtn.style.left = "62%";
-  noBtn.style.top = "50%";
+  noBtn.style.top = "70%";
   noBtn.style.transform = "translate(-50%, -50%)";
   noIsAbsolute = true;
 }
 
 function moveNo() {
+  if (noEscapes >= NO_ESCAPE_LIMIT) return;
+
+  noEscapes++;
   ensureNoAbsolute();
 
   const area = actions.getBoundingClientRect();
   const btn  = noBtn.getBoundingClientRect();
-
   const pad = 10;
-
-  // SAFE ZONE: prevent overlap with YES
-  const yesRect = yesBtn.getBoundingClientRect();
 
   const maxX = Math.max(pad, area.width - btn.width - pad);
   const maxY = Math.max(pad, area.height - btn.height - pad);
 
-  let x, y, tries = 0;
+  // Mobile safe zone: NO should not go above the YES area
+  const isMobile = window.innerWidth <= 520;
+  const yesRect = yesBtn.getBoundingClientRect();
 
+  let x, y, tries = 0;
   do {
     x = rand(pad, maxX);
     y = rand(pad, maxY);
     tries++;
   } while (
-    tries < 12 &&
-    (
-      y < (yesRect.bottom - area.top + 8) && // don't go above YES
-      window.innerWidth <= 520
-    )
+    tries < 16 &&
+    isMobile &&
+    (y < (yesRect.bottom - area.top + 10))
   );
 
   noBtn.style.left = `${x}px`;
   noBtn.style.top  = `${y}px`;
   noBtn.style.transform = "none";
 
-  micro.textContent = "(Still not an option.)";
+  if (noEscapes === 1) micro.textContent = "(Not today.)";
+  if (noEscapes === 2) micro.textContent = "(Still no.)";
+
+  if (noEscapes === 3) {
+    micro.textContent = "(Alright. You win.)";
+
+    // Give up: stop escaping, become clickable, go back into layout
+    noBtn.classList.add("is-given-up");
+    noBtn.style.position = "relative";
+    noBtn.style.left = "auto";
+    noBtn.style.top = "auto";
+    noBtn.style.transform = "none";
+  }
 }
 
+// Escape on desktop hover + mobile tap
 noBtn.addEventListener("mouseenter", moveNo);
 noBtn.addEventListener("touchstart", (e) => {
   e.preventDefault();
@@ -81,7 +96,26 @@ noBtn.addEventListener("touchstart", (e) => {
 }, { passive: false });
 
 window.addEventListener("resize", () => {
-  if (noIsAbsolute) moveNo();
+  // keep it safe after resize (only if still escaping)
+  if (noIsAbsolute && noEscapes < NO_ESCAPE_LIMIT) moveNo();
+});
+
+// After give-up, clicking NO does a classy “nice try”
+noBtn.addEventListener("click", () => {
+  if (noEscapes < NO_ESCAPE_LIMIT) return;
+
+  micro.textContent = "(That’s cute. But it’s Yes.)";
+  card?.animate?.(
+    [
+      { transform: "translateX(0)" },
+      { transform: "translateX(-6px)" },
+      { transform: "translateX(6px)" },
+      { transform: "translateX(-4px)" },
+      { transform: "translateX(4px)" },
+      { transform: "translateX(0)" }
+    ],
+    { duration: 260, easing: "ease-out" }
+  );
 });
 
 // ===== Floaties (love floating on YES) =====
@@ -205,7 +239,7 @@ function stopFireworks() {
   fwTimer = null;
 }
 
-// ===== Music (start on YES gesture; browser-safe) =====
+// ===== Music =====
 function setMusicIcon() {
   if (!musicBtn) return;
   musicBtn.textContent = musicPlaying ? "❚❚" : "♫";
@@ -274,7 +308,7 @@ function showReveal() {
   startFloaties();
   startFireworks();
 
-  reveal.animate(
+  reveal.animate?.(
     [
       { transform: "translateY(10px) scale(.99)", opacity: 0 },
       { transform: "translateY(0) scale(1)", opacity: 1 }
@@ -283,32 +317,26 @@ function showReveal() {
   );
 }
 
-// IMPORTANT: play music directly on click gesture
+// YES: love mode + music + reveal
 yesBtn.addEventListener("click", async () => {
-  // LOVE MODE: change button color immediately
+  // turn button pink immediately
   yesBtn.classList.add("is-love");
-
-  // optional micro feedback
   yesBtn.textContent = "Yes 💗";
 
-  // force music play (browser-safe)
   await forcePlayMusic();
 
-  // small delay so color change is visible before transition
-  setTimeout(() => {
-    showReveal();
-  }, 180);
+  // show reveal after a tiny pause so the color change is visible
+  setTimeout(() => showReveal(), 180);
 });
 
-
+// MORE: bouquet surprise popup + extra sparkle
 moreBtn?.addEventListener("click", () => {
-  // surprise: real bouquet popup
   openPopup();
-  // and extra sparkle
   burst(28);
   launchFirework();
 });
 
+// RESET: restore everything
 resetBtn?.addEventListener("click", () => {
   stopFloaties();
   stopFireworks();
@@ -321,7 +349,13 @@ resetBtn?.addEventListener("click", () => {
   reveal.setAttribute("aria-hidden", "true");
   card.style.display = "block";
 
-  // restore "No"
+  // restore YES
+  yesBtn.classList.remove("is-love");
+  yesBtn.textContent = "Yes";
+
+  // restore NO state
+  noEscapes = 0;
+  noBtn.classList.remove("is-given-up");
   noBtn.style.position = "relative";
   noBtn.style.left = "auto";
   noBtn.style.top = "auto";
@@ -331,5 +365,6 @@ resetBtn?.addEventListener("click", () => {
   micro.textContent = "(The “No” option tends to disappear when it’s outmatched.)";
   burst(10);
 
-  // music stays on reset (classy). If you want it to stop, tell me.
+  // music stays playing (classy). If you want it to stop on reset:
+  // bgm.pause(); musicPlaying=false; setMusicIcon();
 });
