@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Full-screen background -->
+  <!-- Full-screen background photo -->
   <div class="bg" aria-hidden="true">
     <div class="bg__overlay"></div>
     <div class="bg__bloom"></div>
@@ -61,7 +61,7 @@
       </div>
 
       <div class="frame">
-        <img src="assets/ups.jpg" alt="Photo placeholder" />
+        <img src="assets/ups.jpg" alt="Photo" />
         <div class="frame__label">Us.</div>
       </div>
 
@@ -73,8 +73,12 @@
 
     <footer class="footer">
       <span>Sunflowers. Wildflowers. And a decision I don’t second-guess.</span>
+      <button class="musicBtn" id="musicBtn" type="button" aria-label="Toggle music">♫</button>
     </footer>
   </main>
+
+  <!-- Music -->
+  <audio id="bgm" src="assets/Lovee.mp3" preload="auto" loop></audio>
 
   <script src="script.js"></script>
 </body>
