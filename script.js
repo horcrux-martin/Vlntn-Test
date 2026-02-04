@@ -2,28 +2,32 @@
 const rand = (min, max) => Math.random() * (max - min) + min;
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-const panel = document.getElementById("panel");
+// ===== Elements =====
+const card = document.getElementById("card");
 const reveal = document.getElementById("reveal");
 
 const actions = document.getElementById("actions");
 const yesBtn = document.getElementById("yesBtn");
 const noBtn  = document.getElementById("noBtn");
-
-const note = document.getElementById("note");
-const floaties = document.getElementById("floaties");
+const micro  = document.getElementById("micro");
 
 const moreBtn = document.getElementById("moreBtn");
 const resetBtn = document.getElementById("resetBtn");
 
-// ===== "No" button: evasive, but tasteful =====
+const floaties = document.getElementById("floaties");
+
+// Music
+const bgm = document.getElementById("bgm");
+const musicBtn = document.getElementById("musicBtn");
+let musicPlaying = false;
+
+// ===== "No" button: evasive =====
 let noIsAbsolute = false;
 
 function ensureNoAbsolute() {
   if (noIsAbsolute) return;
-
-  // Allow it to move within the "actions" container
   noBtn.style.position = "absolute";
-  noBtn.style.left = "60%";
+  noBtn.style.left = "62%";
   noBtn.style.top = "50%";
   noBtn.style.transform = "translate(-50%, -50%)";
   noIsAbsolute = true;
@@ -46,30 +50,22 @@ function moveNo() {
   noBtn.style.top  = `${y}px`;
   noBtn.style.transform = "none";
 
-  note.textContent = "(It refuses to cooperate.)";
+  micro.textContent = "(It refuses to cooperate.)";
 }
 
-// Desktop hover
 noBtn.addEventListener("mouseenter", moveNo);
-
-// Mobile tap (prevent accidental click)
 noBtn.addEventListener("touchstart", (e) => {
   e.preventDefault();
   moveNo();
 }, { passive: false });
 
 window.addEventListener("resize", () => {
-  // keep it inside bounds after resize
   if (noIsAbsolute) moveNo();
 });
 
-// ===== Floaties (petals + minimal hearts) =====
-const FLOAT_SET = ["🌻","🌼","🌷","✨","💛","🤍"];
+// ===== Floaties (more pink/red/flowers, still tasteful) =====
+const FLOAT_SET = ["🌹","🌸","🌺","💗","💞","🤍","✨","🌻","🌼"];
 let floatTimer = null;
-
-function spawnFloatyBurst(n = 18) {
-  for (let i = 0; i < n; i++) spawnFloaty();
-}
 
 function spawnFloaty() {
   const el = document.createElement("div");
@@ -77,9 +73,9 @@ function spawnFloaty() {
   el.textContent = pick(FLOAT_SET);
 
   const x = rand(6, 94);
-  const size = rand(16, 28);
-  const dur = rand(3.6, 6.6);
-  const delay = rand(0, 0.6);
+  const size = rand(16, 30);
+  const dur = rand(3.2, 6.0);
+  const delay = rand(0, 0.5);
 
   el.style.left = `${x}vw`;
   el.style.bottom = `-10vh`;
@@ -89,13 +85,17 @@ function spawnFloaty() {
 
   floaties.appendChild(el);
 
-  const ttl = (dur + delay) * 1000 + 300;
+  const ttl = (dur + delay) * 1000 + 400;
   setTimeout(() => el.remove(), ttl);
+}
+
+function burst(n = 22) {
+  for (let i = 0; i < n; i++) spawnFloaty();
 }
 
 function startFloaties() {
   if (floatTimer) return;
-  floatTimer = setInterval(spawnFloaty, 140);
+  floatTimer = setInterval(spawnFloaty, 110);
 }
 
 function stopFloaties() {
@@ -103,54 +103,53 @@ function stopFloaties() {
   floatTimer = null;
 }
 
-// ===== Fireworks (soft + classy) =====
+// ===== Fireworks (soft + cinematic) =====
 const canvas = document.getElementById("fx");
 const ctx = canvas.getContext("2d");
 
-let W, H;
-function resize() {
+function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
-  W = canvas.width  = Math.floor(window.innerWidth * dpr);
-  H = canvas.height = Math.floor(window.innerHeight * dpr);
+  canvas.width = Math.floor(window.innerWidth * dpr);
+  canvas.height = Math.floor(window.innerHeight * dpr);
   canvas.style.width = "100%";
   canvas.style.height = "100%";
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
-window.addEventListener("resize", resize);
-resize();
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
 let particles = [];
 let fireworksOn = false;
 let fwTimer = null;
 
-function launch() {
+function launchFirework() {
   const cx = rand(0.18, 0.82) * window.innerWidth;
-  const cy = rand(0.18, 0.55) * window.innerHeight;
+  const cy = rand(0.16, 0.54) * window.innerHeight;
 
-  // restrained palette
-  const colors = ["#ffffff", "#f6c445", "#f2a900", "#ff6ea8", "#1a1f26"];
+  const colors = ["#ffffff", "#ff3d7a", "#ff6ea8", "#f7c948", "#0b0c10"];
 
-  const count = Math.floor(rand(36, 64));
+  const count = Math.floor(rand(42, 76));
   for (let i = 0; i < count; i++) {
     const a = rand(0, Math.PI * 2);
-    const sp = rand(1.4, 5.0);
+    const sp = rand(1.5, 5.4);
+
     particles.push({
       x: cx, y: cy,
       vx: Math.cos(a) * sp,
       vy: Math.sin(a) * sp,
-      life: rand(38, 72),
+      life: rand(40, 78),
       color: pick(colors),
-      size: rand(1.4, 3.0),
+      size: rand(1.5, 3.2),
       drag: rand(0.965, 0.985),
       gravity: rand(0.02, 0.06)
     });
   }
 }
 
-function tick() {
+function tickFx() {
   if (!fireworksOn && particles.length === 0) return;
 
-  // gentle fade trail
+  // gentle trail
   ctx.fillStyle = "rgba(255,255,255,0.10)";
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -165,24 +164,23 @@ function tick() {
 
     ctx.beginPath();
     ctx.fillStyle = p.color;
-    ctx.globalAlpha = Math.min(1, p.life / 40);
+    ctx.globalAlpha = Math.min(1, p.life / 44);
     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.globalAlpha = 1;
 
-  requestAnimationFrame(tick);
+  requestAnimationFrame(tickFx);
 }
 
 function startFireworks() {
   fireworksOn = true;
-  // initial
-  launch(); launch();
-  tick();
+  launchFirework(); launchFirework();
+  tickFx();
   fwTimer = setInterval(() => {
-    launch();
-    if (Math.random() < 0.25) launch();
-  }, 720);
+    launchFirework();
+    if (Math.random() < 0.28) launchFirework();
+  }, 700);
 }
 
 function stopFireworks() {
@@ -191,18 +189,60 @@ function stopFireworks() {
   fwTimer = null;
 }
 
-// ===== Yes flow =====
+// ===== Music controls =====
+function setMusicIcon() {
+  if (!musicBtn) return;
+  musicBtn.textContent = musicPlaying ? "❚❚" : "♫";
+}
+
+function fadeInMusic(target = 0.75) {
+  if (!bgm) return;
+
+  bgm.volume = 0;
+  const playPromise = bgm.play();
+  if (playPromise && typeof playPromise.then === "function") {
+    playPromise.catch(() => {});
+  }
+  musicPlaying = true;
+  setMusicIcon();
+
+  let v = 0;
+  const fade = setInterval(() => {
+    v += 0.02;
+    bgm.volume = Math.min(v, target);
+    if (v >= target) clearInterval(fade);
+  }, 120);
+}
+
+musicBtn?.addEventListener("click", () => {
+  if (!bgm) return;
+
+  if (musicPlaying) {
+    bgm.pause();
+    musicPlaying = false;
+    setMusicIcon();
+  } else {
+    const p = bgm.play();
+    if (p && typeof p.then === "function") p.catch(() => {});
+    musicPlaying = true;
+    bgm.volume = Math.max(bgm.volume || 0.6, 0.6);
+    setMusicIcon();
+  }
+});
+
+// ===== Flow =====
 function showReveal() {
-  panel.style.display = "none";
+  // Start music only after user gesture (browser-friendly)
+  if (bgm && !musicPlaying) fadeInMusic(0.75);
+
+  card.style.display = "none";
   reveal.style.display = "flex";
   reveal.setAttribute("aria-hidden", "false");
 
-  // effects
-  spawnFloatyBurst(22);
+  burst(28);
   startFloaties();
   startFireworks();
 
-  // subtle entrance animation
   reveal.animate(
     [
       { transform: "translateY(10px) scale(.99)", opacity: 0 },
@@ -214,31 +254,30 @@ function showReveal() {
 
 yesBtn.addEventListener("click", showReveal);
 
-// ===== Buttons on reveal =====
-moreBtn.addEventListener("click", () => {
-  spawnFloatyBurst(28);
-  launch();
+moreBtn?.addEventListener("click", () => {
+  burst(30);
+  launchFirework();
 });
 
-resetBtn.addEventListener("click", () => {
-  // reset visuals
+resetBtn?.addEventListener("click", () => {
   stopFloaties();
   stopFireworks();
   particles = [];
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-  // restore view
   reveal.style.display = "none";
   reveal.setAttribute("aria-hidden", "true");
-  panel.style.display = "block";
+  card.style.display = "block";
 
-  // restore "No" position
+  // restore "No"
   noBtn.style.position = "relative";
   noBtn.style.left = "auto";
   noBtn.style.top = "auto";
   noBtn.style.transform = "none";
   noIsAbsolute = false;
 
-  note.textContent = "(The “No” option is… unreliable.)";
-  spawnFloatyBurst(10);
+  micro.textContent = "(The “No” option tends to disappear when it’s outmatched.)";
+  burst(10);
+
+  // keep music playing on reset (classy). If you want it to stop, tell me.
 });
