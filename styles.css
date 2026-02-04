@@ -505,6 +505,31 @@ body{
     padding: 14px;
   }
 }
+/* ===== YES button love mode ===== */
+.btn--yes.is-love{
+  background: linear-gradient(180deg, #ff3d7a, #ff1f64);
+  color: #fff;
+}
+
+.btn--yes.is-love::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.45), transparent 40%),
+    linear-gradient(90deg, #ff5fa2, #ff2e6c, #ff9ac8);
+  filter: blur(14px);
+  opacity: .95;
+  z-index:-1;
+  animation: lovePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes lovePulse{
+  0%,100%{ transform: scale(1); opacity:.9; }
+  50%{ transform: scale(1.08); opacity:1; }
+}
+
 
 /* Responsive main */
 @media (max-width: 460px){
