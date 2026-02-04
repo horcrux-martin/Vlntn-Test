@@ -267,9 +267,21 @@ function showReveal() {
 
 // IMPORTANT: play music directly on click gesture
 yesBtn.addEventListener("click", async () => {
+  // LOVE MODE: change button color immediately
+  yesBtn.classList.add("is-love");
+
+  // optional micro feedback
+  yesBtn.textContent = "Yes 💗";
+
+  // force music play (browser-safe)
   await forcePlayMusic();
-  showReveal();
+
+  // small delay so color change is visible before transition
+  setTimeout(() => {
+    showReveal();
+  }, 180);
 });
+
 
 moreBtn?.addEventListener("click", () => {
   // surprise: real bouquet popup
