@@ -16,6 +16,12 @@ const resetBtn = document.getElementById("resetBtn");
 
 const floaties = document.getElementById("floaties");
 
+// Popup
+const popup = document.getElementById("popup");
+const popupClose = document.getElementById("popupClose");
+const popupX = document.getElementById("popupX");
+const popupBtn = document.getElementById("popupBtn");
+
 // Music
 const bgm = document.getElementById("bgm");
 const musicBtn = document.getElementById("musicBtn");
@@ -43,11 +49,8 @@ function moveNo() {
   const maxX = Math.max(pad, area.width - btn.width - pad);
   const maxY = Math.max(pad, area.height - btn.height - pad);
 
-  const x = rand(pad, maxX);
-  const y = rand(pad, maxY);
-
-  noBtn.style.left = `${x}px`;
-  noBtn.style.top  = `${y}px`;
+  noBtn.style.left = `${rand(pad, maxX)}px`;
+  noBtn.style.top  = `${rand(pad, maxY)}px`;
   noBtn.style.transform = "none";
 
   micro.textContent = "(It refuses to cooperate.)";
@@ -63,8 +66,8 @@ window.addEventListener("resize", () => {
   if (noIsAbsolute) moveNo();
 });
 
-// ===== Floaties (more pink/red/flowers, still tasteful) =====
-const FLOAT_SET = ["🌹","🌸","🌺","💗","💞","🤍","✨","🌻","🌼"];
+// ===== Floaties (love floating on YES) =====
+const FLOAT_SET = ["💗","💞","💘","🌹","🌸","🌺","✨","🤍","🌻"];
 let floatTimer = null;
 
 function spawnFloaty() {
@@ -74,7 +77,7 @@ function spawnFloaty() {
 
   const x = rand(6, 94);
   const size = rand(16, 30);
-  const dur = rand(3.2, 6.0);
+  const dur = rand(3.1, 6.0);
   const delay = rand(0, 0.5);
 
   el.style.left = `${x}vw`;
@@ -84,18 +87,14 @@ function spawnFloaty() {
   el.style.animationDelay = `${delay}s`;
 
   floaties.appendChild(el);
-
-  const ttl = (dur + delay) * 1000 + 400;
-  setTimeout(() => el.remove(), ttl);
+  setTimeout(() => el.remove(), (dur + delay) * 1000 + 500);
 }
 
-function burst(n = 22) {
-  for (let i = 0; i < n; i++) spawnFloaty();
-}
+function burst(n = 24) { for (let i = 0; i < n; i++) spawnFloaty(); }
 
 function startFloaties() {
   if (floatTimer) return;
-  floatTimer = setInterval(spawnFloaty, 110);
+  floatTimer = setInterval(spawnFloaty, 105);
 }
 
 function stopFloaties() {
@@ -103,7 +102,7 @@ function stopFloaties() {
   floatTimer = null;
 }
 
-// ===== Fireworks (soft + cinematic) =====
+// ===== Fireworks =====
 const canvas = document.getElementById("fx");
 const ctx = canvas.getContext("2d");
 
@@ -127,8 +126,8 @@ function launchFirework() {
   const cy = rand(0.16, 0.54) * window.innerHeight;
 
   const colors = ["#ffffff", "#ff3d7a", "#ff6ea8", "#f7c948", "#0b0c10"];
-
   const count = Math.floor(rand(42, 76));
+
   for (let i = 0; i < count; i++) {
     const a = rand(0, Math.PI * 2);
     const sp = rand(1.5, 5.4);
@@ -149,7 +148,6 @@ function launchFirework() {
 function tickFx() {
   if (!fireworksOn && particles.length === 0) return;
 
-  // gentle trail
   ctx.fillStyle = "rgba(255,255,255,0.10)";
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -189,32 +187,26 @@ function stopFireworks() {
   fwTimer = null;
 }
 
-// ===== Music controls =====
+// ===== Music (start on YES gesture; browser-safe) =====
 function setMusicIcon() {
   if (!musicBtn) return;
   musicBtn.textContent = musicPlaying ? "❚❚" : "♫";
 }
 
-function fadeInMusic(target = 0.75) {
-  if (!bgm) return;
-
-  bgm.volume = 0;
-  const playPromise = bgm.play();
-  if (playPromise && typeof playPromise.then === "function") {
-    playPromise.catch(() => {});
+async function forcePlayMusic() {
+  if (!bgm || musicPlaying) return;
+  try {
+    bgm.currentTime = 0;
+    bgm.volume = 0.75;
+    await bgm.play();
+    musicPlaying = true;
+    setMusicIcon();
+  } catch (e) {
+    console.log("Audio blocked:", e);
   }
-  musicPlaying = true;
-  setMusicIcon();
-
-  let v = 0;
-  const fade = setInterval(() => {
-    v += 0.02;
-    bgm.volume = Math.min(v, target);
-    if (v >= target) clearInterval(fade);
-  }, 120);
 }
 
-musicBtn?.addEventListener("click", () => {
+musicBtn?.addEventListener("click", async () => {
   if (!bgm) return;
 
   if (musicPlaying) {
@@ -222,24 +214,45 @@ musicBtn?.addEventListener("click", () => {
     musicPlaying = false;
     setMusicIcon();
   } else {
-    const p = bgm.play();
-    if (p && typeof p.then === "function") p.catch(() => {});
-    musicPlaying = true;
-    bgm.volume = Math.max(bgm.volume || 0.6, 0.6);
-    setMusicIcon();
+    try {
+      await bgm.play();
+      musicPlaying = true;
+      bgm.volume = Math.max(bgm.volume || 0.65, 0.65);
+      setMusicIcon();
+    } catch (e) {
+      console.log("Audio blocked:", e);
+    }
   }
+});
+
+// ===== Bouquet popup =====
+function openPopup() {
+  if (!popup) return;
+  popup.classList.add("is-open");
+  popup.setAttribute("aria-hidden", "false");
+  burst(18);
+}
+
+function closePopup() {
+  if (!popup) return;
+  popup.classList.remove("is-open");
+  popup.setAttribute("aria-hidden", "true");
+}
+
+popupClose?.addEventListener("click", closePopup);
+popupX?.addEventListener("click", closePopup);
+popupBtn?.addEventListener("click", closePopup);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closePopup();
 });
 
 // ===== Flow =====
 function showReveal() {
-  // Start music only after user gesture (browser-friendly)
-  if (bgm && !musicPlaying) fadeInMusic(0.75);
-
   card.style.display = "none";
   reveal.style.display = "flex";
   reveal.setAttribute("aria-hidden", "false");
 
-  burst(28);
+  burst(30);
   startFloaties();
   startFireworks();
 
@@ -252,10 +265,17 @@ function showReveal() {
   );
 }
 
-yesBtn.addEventListener("click", showReveal);
+// IMPORTANT: play music directly on click gesture
+yesBtn.addEventListener("click", async () => {
+  await forcePlayMusic();
+  showReveal();
+});
 
 moreBtn?.addEventListener("click", () => {
-  burst(30);
+  // surprise: real bouquet popup
+  openPopup();
+  // and extra sparkle
+  burst(28);
   launchFirework();
 });
 
@@ -264,6 +284,8 @@ resetBtn?.addEventListener("click", () => {
   stopFireworks();
   particles = [];
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+  closePopup();
 
   reveal.style.display = "none";
   reveal.setAttribute("aria-hidden", "true");
@@ -279,5 +301,5 @@ resetBtn?.addEventListener("click", () => {
   micro.textContent = "(The “No” option tends to disappear when it’s outmatched.)";
   burst(10);
 
-  // keep music playing on reset (classy). If you want it to stop, tell me.
+  // music stays on reset (classy). If you want it to stop, tell me.
 });
