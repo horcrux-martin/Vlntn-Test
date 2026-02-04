@@ -99,9 +99,9 @@ noBtn.addEventListener("touchstart", (e) => {
 }, { passive: false });
 
 window.addEventListener("resize", () => {
-  // keep it safe after resize (only if still escaping)
-  if (noIsAbsolute && noEscapes < NO_ESCAPE_LIMIT) moveNo();
+  // don't auto-move NO on resize; it can cause overlap/tap issues on mobile
 });
+
 
 // After give-up, clicking NO does a classy “nice try”
 noBtn.addEventListener("click", () => {
