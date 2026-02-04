@@ -305,14 +305,25 @@ function showReveal() {
 }
 
 // YES: pink love mode + music + reveal (mobile-safe)
-yesBtn.addEventListener("click", async () => {
+function onYes() {
+  // visual feedback instantly
   yesBtn.classList.add("is-love");
   yesBtn.textContent = "Yes 💗";
 
-  await forcePlayMusic();
+  // start music but DON'T wait for it (mobile-friendly)
+  forcePlayMusic();
 
-  setTimeout(() => showReveal(), 180);
-});
+  // go reveal immediately
+  showReveal();
+}
+
+// Click + touchstart (touchstart makes it reliable on mobile)
+yesBtn.addEventListener("click", onYes);
+yesBtn.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  onYes();
+}, { passive: false });
+
 
 // More: bouquet popup + extra sparkle
 moreBtn?.addEventListener("click", () => {
