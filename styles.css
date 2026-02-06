@@ -263,3 +263,12 @@ body{
   .card{ padding:20px 22px 16px; }
   .hero__img{ width:100px; min-width:100px; }
 }
+
+/* FIX: background layers should never block clicks */
+.bg,
+.bg * ,
+#fx,
+#floaties {
+  pointer-events: none;
+}
+
