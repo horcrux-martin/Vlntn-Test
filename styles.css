@@ -272,3 +272,8 @@ body{
   pointer-events: none;
 }
 
+/* FIX: background & fx never block clicks */
+.bg, .bg *, #fx, #floaties { pointer-events: none; }
+
+/* FIX: ensure UI is above everything */
+.card, .reveal { position: relative; z-index: 10; }
