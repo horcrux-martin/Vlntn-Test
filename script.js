@@ -304,3 +304,22 @@ musicBtn.addEventListener("click", async () => {
 
 // subtle intro
 setTimeout(() => spawnFloatyBurst(5), 700);
+
+const bgm = document.getElementById("bgm");
+
+// autoplay muted
+window.addEventListener("load", () => {
+  bgm.play().catch(()=>{});
+});
+
+// unmute on first interaction
+function unlockAudio(){
+  bgm.muted = false;
+  bgm.volume = 1;
+  document.removeEventListener("click", unlockAudio);
+  document.removeEventListener("touchstart", unlockAudio);
+}
+
+document.addEventListener("click", unlockAudio, { once:true });
+document.addEventListener("touchstart", unlockAudio, { once:true });
+
