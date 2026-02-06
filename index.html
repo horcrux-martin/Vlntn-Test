@@ -1,14 +1,16 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Valentine for Devi</title>
+  <title>Hopelessly Devoted</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Full-screen background photo -->
+  <!-- Full-screen background -->
   <div class="bg" aria-hidden="true">
+    <div class="bg__photo"></div>
     <div class="bg__overlay"></div>
     <div class="bg__bloom"></div>
     <div class="bg__grain"></div>
@@ -21,88 +23,77 @@
   <div id="floaties" aria-hidden="true"></div>
 
   <main class="stage">
-    <!-- Question -->
-    <section class="card" id="card" aria-label="Valentine question">
+    <!-- Main card -->
+    <section class="card" id="card" aria-label="Message card">
       <div class="card__header">
         <div class="dots" aria-hidden="true">
           <span></span><span></span><span></span>
         </div>
-        <div class="tag">No games. Just intention.</div>
+        <div class="tag">No asking. Just closure.</div>
       </div>
 
-      <h1 class="headline">
-        Will you be my Valentine, <span class="accent">Devi</span>?
-      </h1>
-
-      <p class="copy">
-        I’m not here to impress you.<br/>
-        I’m here to <span class="strong">choose you</span> — clearly, consistently, and on purpose.
-      </p>
-
-      <div class="actions" id="actions">
-        <button class="btn btn--yes" id="yesBtn" type="button">Yes</button>
-        <button class="btn btn--no" id="noBtn" type="button">No</button>
+      <div class="hero">
+        <div class="hero__img" aria-hidden="true"></div>
+        <div class="hero__txt">
+          <div class="pill" id="pill">A last honest page.</div>
+          <h1 class="headline" id="headline">
+            Hopelessly Devoted to <span class="accent">You</span>.
+          </h1>
+          <p class="copy" id="copy">
+            This isn’t a proposal.<br/>
+            It’s a clean ending — with respect.
+          </p>
+        </div>
       </div>
 
-      <p class="micro" id="micro">
-        (The “No” option tends to disappear when it’s outmatched.)
-      </p>
+      <div class="divider" aria-hidden="true"></div>
+
+      <div class="chapter" id="chapter">
+        <p class="chapter__title" id="chapterTitle">Chapter 1</p>
+        <p class="chapter__body" id="chapterBody">
+          I won’t chase you for an answer anymore.
+          I’ll say what’s true once — and then I’ll be quiet.
+        </p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn--yes" id="moreBtn" type="button">More</button>
+        <button class="btn btn--ghost" id="resetBtn" type="button">Reset</button>
+      </div>
+
+      <p class="micro" id="micro">Tap “More” to turn the page.</p>
     </section>
 
-    <!-- Reveal -->
+    <!-- Final section (no photo of you-two; use wilt gif) -->
     <section class="reveal" id="reveal" aria-hidden="true">
       <div class="reveal__top">
-        <div class="pill">Confirmed.</div>
-        <h2 class="reveal__title">Come closer.</h2>
-        <p class="reveal__copy">
-          Good. Then it’s simple.<br/>
-          You and me — and I’ll handle the rest.
+        <div class="pill">Final.</div>
+        <h2 class="reveal__title" id="finalTitle">I will not disturb you anymore.</h2>
+        <p class="reveal__copy" id="finalCopy">
+          No texts. No calls. No checking. No “one last time”.<br/>
+          You’ll have your peace — completely.
         </p>
       </div>
 
       <div class="frame">
-        <img src="assets/ups.jpg" alt="Photo" />
-        <div class="frame__label">Us.</div>
+        <img src="assets/wilt.gif" alt="Withered flowers" />
+        <div class="frame__label">Letting go.</div>
       </div>
 
       <div class="reveal__actions">
-        <button class="btn btn--ghost" id="moreBtn" type="button">More</button>
-        <button class="btn btn--ghost" id="resetBtn" type="button">Reset</button>
+        <button class="btn btn--yes" id="closeBtn" type="button">Close</button>
+        <button class="btn btn--ghost" id="resetBtn2" type="button">Reset</button>
       </div>
     </section>
 
     <footer class="footer">
-      <span>Sunflowers. Wildflowers. And a decision I don’t second-guess.</span>
+      <span id="footerLine">If you want distance, you’ll get distance. No drama.</span>
       <button class="musicBtn" id="musicBtn" type="button" aria-label="Toggle music">♫</button>
     </footer>
   </main>
 
-  <!-- Bouquet popup -->
-  <div class="popup" id="popup" aria-hidden="true" role="dialog" aria-label="Bouquet surprise">
-    <div class="popup__backdrop" id="popupClose"></div>
-    <div class="popup__card" role="document">
-      <button class="popup__x" id="popupX" type="button" aria-label="Close">✕</button>
-
-      <div class="popup__bouquet">
-        <img src="assets/bouquet.png" alt="Bouquet" />
-      </div>
-
-      <div class="popup__text">
-        <div class="popup__pill">A little surprise.</div>
-        <h3 class="popup__title">
-          Thank you for being my Valentine, <span class="accent2">Devi</span>.
-        </h3>
-        <p class="popup__sub">
-          I’m serious about you — and I like making that obvious.
-        </p>
-
-        <button class="btn btn--yes popup__btn" id="popupBtn" type="button">Close</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Music -->
-  <audio id="bgm" src="assets/Lovee.mp3" preload="auto" loop></audio>
+  <audio id="bgm" src="assets/FUCK.mp3" preload="auto" loop></audio>
 
   <script src="script.js"></script>
 </body>
